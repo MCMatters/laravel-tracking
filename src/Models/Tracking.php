@@ -15,6 +15,9 @@ use const false;
  */
 class Tracking extends Model
 {
+    /**
+     * @var bool
+     */
     public $timestamps = false;
 
     /**
@@ -29,8 +32,9 @@ class Tracking extends Model
      */
     public function __construct(array $attributes = [])
     {
-        parent::__construct($attributes);
-
         $this->setTable(Config::get("{$this->config}.table"));
+        $this->guard([$this->primaryKey]);
+
+        parent::__construct($attributes);
     }
 }

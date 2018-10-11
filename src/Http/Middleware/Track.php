@@ -79,11 +79,13 @@ class Track
      */
     protected function track($user, Request $request): void
     {
+        $input = $request->all();
+
         Tracking::query()->create([
             'user_id'    => $user ? $user->getKey() : null,
             'uri'        => $request->getPathInfo(),
             'method'     => $request->method(),
-            'input'      => json_encode($request->all()),
+            'input'      => $input ? json_encode($input) : null,
             'ip'         => $request->ip(),
             'user_agent' => $request->userAgent(),
             'created_at' => (string) Carbon::now(),

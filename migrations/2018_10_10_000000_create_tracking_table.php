@@ -35,7 +35,7 @@ class CreateTrackingTable extends Migration
             $table->unsignedInteger('user_id')->nullable();
             $table->string('uri', 2000);
             $table->string('method');
-            $table->json('input');
+            $table->json('input')->nullable();
             $table->ipAddress('ip');
             $table->string('user_agent', 1000);
             $table->timestamp('created_at');
