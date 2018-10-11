@@ -1,0 +1,22 @@
+{
+    "name": "mcmatters/laravel-tracking",
+    "description": "Simple tracking tools",
+    "license": "MIT",
+    "authors": [
+        {
+            "name": "Dmitry Borzyonok",
+            "email": "dima.matters@gmail.com"
+        }
+    ],
+    "require": {
+        "php": ">=7.1",
+        "illuminate/support": "^5.7",
+        "illuminate/http": "^5.7",
+        "illuminate/database": "^5.7"
+    },
+    "autoload": {
+        "psr-4": {
+            "McMatters\\LaravelTracking\\": "src/"
+        }
+    }
+}
