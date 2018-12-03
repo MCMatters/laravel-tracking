@@ -114,11 +114,11 @@ class Track
         if ($response instanceof JsonResponse) {
             $data = $response->getContent();
         } elseif ($response instanceof RedirectResponse) {
-            $data = ['redirect' => $response->getTargetUrl()];
+            $data = json_encode(['redirect' => $response->getTargetUrl()]);
         } elseif ($response instanceof Response &&
             false !== ($content = $response->getContent())
         ) {
-            $data = ['html' => $content];
+            $data = json_encode(['html' => $content]);
         }
 
         if ($data) {
