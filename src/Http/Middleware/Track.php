@@ -6,11 +6,10 @@ namespace McMatters\LaravelTracking\Http\Middleware;
 
 use Closure;
 use Illuminate\Http\Request;
-use Illuminate\Support\Arr;
-use Illuminate\Support\Carbon;
-use Illuminate\Support\Facades\Config;
+use Illuminate\Support\{Arr, Carbon, Facades\Config};
 use McMatters\LaravelTracking\Models\Tracking;
-use const null, true;
+use Symfony\Component\HttpFoundation\{JsonResponse, RedirectResponse, Response};
+use const false, null, true;
 use function in_array, json_encode;
 
 /**
@@ -29,6 +28,11 @@ class Track
      * @var array
      */
     protected $config = [];
+
+    /**
+     * @var \McMatters\LaravelTracking\Models\Tracking
+     */
+    protected $trackingModel;
 
     /**
      * Track constructor.
@@ -55,7 +59,11 @@ class Track
 
         $this->track($user, $request);
 
-        return $next($request);
+        $response = $next($request);
+
+        $this->trackResponse($response);
+
+        return $response;
     }
 
     /**
@@ -81,15 +89,40 @@ class Track
     {
         $input = $request->all();
 
-        Tracking::query()->create([
-            'user_id'    => $user ? $user->getKey() : null,
-            'uri'        => $request->getPathInfo(),
-            'method'     => $request->method(),
-            'input'      => $input ? json_encode($input) : null,
-            'ip'         => $request->ip(),
+        $this->trackingModel = Tracking::query()->create([
+            'user_id' => $user ? $user->getKey() : null,
+            'uri' => $request->getPathInfo(),
+            'method' => $request->method(),
+            'input' => $input ? json_encode($input) : null,
+            'headers' => $request->headers->all(),
+            'ip' => $request->ip(),
             'user_agent' => $request->userAgent(),
             'created_at' => (string) Carbon::now(),
         ]);
+    }
+
+    /**
+     * @param mixed $response
+     *
+     * @return void
+     */
+    protected function trackResponse($response): void
+    {
+        $data = [];
+
+        if ($response instanceof JsonResponse) {
+            $data = $response->getContent();
+        } elseif ($response instanceof RedirectResponse) {
+            $data = ['redirect' => $response->getTargetUrl()];
+        } elseif ($response instanceof Response &&
+            false !== ($content = $response->getContent())
+        ) {
+            $data = ['html' => $content];
+        }
+
+        if ($data) {
+            $this->trackingModel->update(['response' => $data]);
+        }
     }
 
     /**

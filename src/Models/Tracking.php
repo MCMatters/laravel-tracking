@@ -23,7 +23,7 @@ class Tracking extends Model
     /**
      * @var string
      */
-    protected $config = 'tracking';
+    protected $configName = 'tracking';
 
     /**
      * Tracking constructor.
@@ -32,7 +32,7 @@ class Tracking extends Model
      */
     public function __construct(array $attributes = [])
     {
-        $this->setTable(Config::get("{$this->config}.table"));
+        $this->setTable(Config::get("{$this->configName}.table"));
         $this->guard([$this->primaryKey]);
 
         parent::__construct($attributes);
