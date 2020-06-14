@@ -1,6 +1,6 @@
 <?php
 
-declare(strict_types = 1);
+declare(strict_types=1);
 
 return [
     // Settings for skipping.
@@ -25,6 +25,12 @@ return [
 
         // User email field.
         'email' => 'email',
+    ],
+
+    // Sanitize fields from input.
+    'sanitize_input' => [
+        'password',
+        'password_confirmation',
     ],
 
     'table' => 'tracking',

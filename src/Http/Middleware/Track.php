@@ -1,6 +1,6 @@
 <?php
 
-declare(strict_types = 1);
+declare(strict_types=1);
 
 namespace McMatters\LaravelTracking\Http\Middleware;
 
@@ -9,8 +9,10 @@ use Illuminate\Http\Request;
 use Illuminate\Support\{Arr, Carbon, Facades\Config};
 use McMatters\LaravelTracking\Models\Tracking;
 use Symfony\Component\HttpFoundation\{JsonResponse, RedirectResponse, Response};
-use const false, null, true;
+
 use function in_array, json_encode;
+
+use const false, null, true;
 
 /**
  * Class Track
@@ -43,8 +45,8 @@ class Track
     }
 
     /**
-     * @param Request $request
-     * @param Closure $next
+     * @param \Illuminate\Http\Request $request
+     * @param \Closure $next
      * @param string|null $guard
      *
      * @return mixed
@@ -68,7 +70,7 @@ class Track
 
     /**
      * @param mixed $user
-     * @param Request $request
+     * @param \Illuminate\Http\Request $request
      *
      * @return bool
      */
@@ -81,13 +83,13 @@ class Track
 
     /**
      * @param mixed $user
-     * @param Request $request
+     * @param \Illuminate\Http\Request $request
      *
      * @return void
      */
     protected function track($user, Request $request): void
     {
-        $input = $request->all();
+        $input = Arr::except($request->all(), Arr::get($this->config, 'sanitize_input', []));
         $headers = $request->headers->all();
 
         $this->trackingModel = Tracking::query()->create([
@@ -115,7 +117,8 @@ class Track
             $data = $response->getContent();
         } elseif ($response instanceof RedirectResponse) {
             $data = json_encode(['redirect' => $response->getTargetUrl()]);
-        } elseif ($response instanceof Response &&
+        } elseif (
+            $response instanceof Response &&
             false !== ($content = $response->getContent())
         ) {
             $data = json_encode(['html' => $content]);
@@ -151,7 +154,7 @@ class Track
     }
 
     /**
-     * @param Request $request
+     * @param \Illuminate\Http\Request $request
      *
      * @return bool
      */
