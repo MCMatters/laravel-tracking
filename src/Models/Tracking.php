@@ -6,6 +6,7 @@ namespace McMatters\LaravelTracking\Models;
 
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Facades\Config;
+
 use const false;
 
 /**
