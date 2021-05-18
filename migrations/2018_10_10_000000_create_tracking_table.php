@@ -38,9 +38,9 @@ class CreateTrackingTable extends Migration
             $table->json('input')->nullable();
             $table->json('response')->nullable();
             $table->json('headers')->nullable();
-            $table->ipAddress('ip');
+            $table->ipAddress('ip')->nullable();
             $table->string('user_agent', 1000)->nullable();
-            $table->timestamp('created_at');
+            $table->timestamp('created_at')->nullable();
         });
     }
 

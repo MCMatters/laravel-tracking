@@ -160,11 +160,13 @@ class Track
      */
     protected function shouldSkipUri(Request $request): bool
     {
-        return in_array(
-            $request->getRequestUri(),
-            Arr::get($this->config, 'skip.uris', []),
-            true
-        );
+        foreach (Arr::get($this->config, 'skip.uris', []) as $pattern) {
+            if ($request->is($pattern)) {
+                return true;
+            }
+        }
+
+        return false;
     }
 
     /**
