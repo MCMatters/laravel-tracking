@@ -5,10 +5,10 @@ declare(strict_types=1);
 return [
     // Settings for skipping.
     'skip' => [
-        // Determines whether tracking is required for anonymous users
+        // Determines whether tracking is required for anonymous users.
         'anonymous' => false,
 
-        // List of user names that should be skipped.
+        // List of usernames that should be skipped.
         'names' => [],
 
         // List of user emails that should be skipped.
@@ -27,10 +27,19 @@ return [
         'email' => 'email',
     ],
 
-    // Sanitize fields from input.
-    'sanitize_input' => [
-        'password',
-        'password_confirmation',
+    // Sanitize fields.
+    'sanitize' => [
+        // Sanitize request input.
+        'input' => [
+            'password',
+            'password_confirmation',
+            '_token',
+        ],
+        // Sanitize request headers.
+        'headers' => [
+            'cookie',
+            'user-agent',
+        ],
     ],
 
     'table' => 'tracking',

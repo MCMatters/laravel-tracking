@@ -6,13 +6,19 @@ namespace McMatters\LaravelTracking\Http\Middleware;
 
 use Closure;
 use Illuminate\Http\Request;
-use Illuminate\Support\{Arr, Carbon, Facades\Config};
+use Illuminate\Support\Arr;
+use Illuminate\Support\Carbon;
+use Illuminate\Support\Facades\Config;
 use McMatters\LaravelTracking\Models\Tracking;
-use Symfony\Component\HttpFoundation\{JsonResponse, RedirectResponse, Response};
+use Symfony\Component\HttpFoundation\JsonResponse;
+use Symfony\Component\HttpFoundation\RedirectResponse;
+use Symfony\Component\HttpFoundation\Response;
 
-use function in_array, json_encode;
+use function in_array;
 
-use const false, null, true;
+use const false;
+use const null;
+use const true;
 
 /**
  * Class Track
@@ -89,18 +95,25 @@ class Track
      */
     protected function track($user, Request $request): void
     {
-        $input = Arr::except($request->all(), Arr::get($this->config, 'sanitize_input', []));
-        $headers = $request->headers->all();
+        $input = Arr::except(
+            $request->all(),
+            $this->config['sanitize']['input'] ?? [],
+        );
+
+        $headers = Arr::except(
+            $request->headers->all(),
+            $this->config['sanitize']['headers'] ?? [],
+        );
 
         $this->trackingModel = Tracking::query()->create([
             'user_id' => $user ? $user->getKey() : null,
             'uri' => $request->getPathInfo(),
             'method' => $request->method(),
-            'input' => $input ? json_encode($input) : null,
-            'headers' => $headers ? json_encode($headers) : null,
+            'input' => $input ?: null,
+            'headers' => $headers ?: null,
             'ip' => $request->ip(),
             'user_agent' => $request->userAgent(),
-            'created_at' => (string) Carbon::now(),
+            'created_at' => Carbon::now(),
         ]);
     }
 
@@ -116,12 +129,12 @@ class Track
         if ($response instanceof JsonResponse) {
             $data = $response->getContent();
         } elseif ($response instanceof RedirectResponse) {
-            $data = json_encode(['redirect' => $response->getTargetUrl()]);
+            $data = ['redirect' => $response->getTargetUrl()];
         } elseif (
             $response instanceof Response &&
             false !== ($content = $response->getContent())
         ) {
-            $data = json_encode(['html' => $content]);
+            $data = ['html' => $content];
         }
 
         if ($data) {
@@ -136,7 +149,7 @@ class Track
      */
     protected function shouldSkipAnonymous($user): bool
     {
-        return null === $user && Arr::get($this->config, 'skip.anonymous');
+        return null === $user && ($this->config['skip']['anonymous'] ?? null);
     }
 
     /**
@@ -160,7 +173,7 @@ class Track
      */
     protected function shouldSkipUri(Request $request): bool
     {
-        foreach (Arr::get($this->config, 'skip.uris', []) as $pattern) {
+        foreach ($this->config['skip']['uris'] ?? [] as $pattern) {
             if ($request->is($pattern)) {
                 return true;
             }
@@ -177,9 +190,9 @@ class Track
     protected function shouldSkipUserByName($user): bool
     {
         return in_array(
-            $user->getAttribute(Arr::get($this->config, 'user_fields.name')),
-            Arr::get($this->config, 'skip.names', []),
-            true
+            $user->getAttribute($this->config['user_fields']['name'] ?? 'name'),
+            $this->config['skip']['names'] ?? [],
+            true,
         );
     }
 
@@ -191,9 +204,9 @@ class Track
     protected function shouldSkipUserByEmail($user): bool
     {
         return in_array(
-            $user->getAttribute(Arr::get($this->config, 'user_fields.email')),
-            Arr::get($this->config, 'skip.emails', []),
-            true
+            $user->getAttribute($this->config['user_fields']['email'] ?? 'email'),
+            $this->config['skip']['emails'] ?? [],
+            true,
         );
     }
 }

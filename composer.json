@@ -1,6 +1,6 @@
 {
     "name": "mcmatters/laravel-tracking",
-    "description": "Simple tracking tools",
+    "description": "Track http requests",
     "license": "MIT",
     "authors": [
         {
@@ -9,10 +9,11 @@
         }
     ],
     "require": {
-        "php": ">=7.1",
-        "illuminate/support": "^5.7 || 6.* || 7.* || 8.*",
-        "illuminate/http": "^5.7 || 6.* || 7.* || 8.*",
-        "illuminate/database": "^5.7 || 6.* || 7.* || 8.*"
+        "php": ">=7.3",
+        "illuminate/console": "8.* || 9.*",
+        "illuminate/database": "8.* || 9.*",
+        "illuminate/http": "8.* || 9.*",
+        "illuminate/support": "8.* || 9.*"
     },
     "autoload": {
         "psr-4": {

@@ -26,6 +26,18 @@ class ServiceProvider extends BaseServiceProvider
             $this->publishes([
                 __DIR__.'/../migrations' => $this->app->databasePath('migrations'),
             ], 'migrations');
+
+            $this->commands([
+                Console\Commands\PruneCommand::class,
+            ]);
         }
+    }
+
+    /**
+     * @return void
+     */
+    public function register(): void
+    {
+        $this->mergeConfigFrom(__DIR__.'/../config/tracking.php', 'tracking');
     }
 }

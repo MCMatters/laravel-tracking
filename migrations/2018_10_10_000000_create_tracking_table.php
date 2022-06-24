@@ -31,16 +31,16 @@ class CreateTrackingTable extends Migration
     public function up(): void
     {
         Schema::create($this->table, function (Blueprint $table) {
-            $table->bigIncrements('id');
-            $table->unsignedBigInteger('user_id')->nullable();
+            $table->uuid('id')->primary();
+            $table->unsignedBigInteger('user_id')->nullable()->index();
             $table->string('uri', 2000);
-            $table->string('method');
+            $table->string('method')->index();
             $table->json('input')->nullable();
             $table->json('response')->nullable();
             $table->json('headers')->nullable();
             $table->ipAddress('ip')->nullable();
             $table->string('user_agent', 1000)->nullable();
-            $table->timestamp('created_at')->nullable();
+            $table->timestamp('created_at')->nullable()->index();
         });
     }
 
