@@ -9,11 +9,6 @@ use Illuminate\Console\Command;
 use Illuminate\Database\Eloquent\Builder;
 use McMatters\LaravelTracking\Models\Tracking;
 
-/**
- * Class PruneCommand
- *
- * @package McMatters\LaravelTracking\Console\Commands
- */
 class PruneCommand extends Command
 {
     /**
@@ -26,9 +21,6 @@ class PruneCommand extends Command
      */
     protected $description = 'Prune stale entries from the database';
 
-    /**
-     * @return int
-     */
     public function handle(): int
     {
         $count = $this->getQuery()->delete();
@@ -38,9 +30,6 @@ class PruneCommand extends Command
         return self::SUCCESS;
     }
 
-    /**
-     * @return \Illuminate\Database\Eloquent\Builder
-     */
     protected function getQuery(): Builder
     {
         $days = $this->option('days');

@@ -6,16 +6,8 @@ namespace McMatters\LaravelTracking;
 
 use Illuminate\Support\ServiceProvider as BaseServiceProvider;
 
-/**
- * Class ServiceProvider
- *
- * @package McMatters\LaravelTracking
- */
 class ServiceProvider extends BaseServiceProvider
 {
-    /**
-     * @return void
-     */
     public function boot(): void
     {
         if ($this->app->runningInConsole()) {
@@ -33,9 +25,6 @@ class ServiceProvider extends BaseServiceProvider
         }
     }
 
-    /**
-     * @return void
-     */
     public function register(): void
     {
         $this->mergeConfigFrom(__DIR__.'/../config/tracking.php', 'tracking');

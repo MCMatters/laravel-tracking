@@ -11,11 +11,6 @@ use Illuminate\Support\Str;
 use const false;
 use const null;
 
-/**
- * Class Tracking
- *
- * @package McMatters\LaravelTracking\Models
- */
 class Tracking extends Model
 {
     /**
@@ -61,16 +56,16 @@ class Tracking extends Model
      */
     protected $configName = 'tracking';
 
-    /**
-     * Tracking constructor.
-     *
-     * @param array $attributes
-     */
     public function __construct(array $attributes = [])
     {
         $this->setTable(Config::get("{$this->configName}.table"));
         $this->guard([$this->primaryKey]);
 
+        parent::__construct($attributes);
+    }
+
+    protected static function booting(): void
+    {
         static::creating(static function (Model $model) {
             $keyName = $model->getKeyName();
             $query = $model->newQueryWithoutScopes()->select([$keyName]);
@@ -82,6 +77,6 @@ class Tracking extends Model
             $model->setAttribute($keyName, $uuid);
         });
 
-        parent::__construct($attributes);
+        parent::booting();
     }
 }

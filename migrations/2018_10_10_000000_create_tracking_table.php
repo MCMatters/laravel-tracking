@@ -7,27 +7,15 @@ use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Config;
 use Illuminate\Support\Facades\Schema;
 
-/**
- * Class CreateTrackingTable
- */
 class CreateTrackingTable extends Migration
 {
-    /**
-     * @var string
-     */
     protected $table;
 
-    /**
-     * CreateRolesTable constructor.
-     */
     public function __construct()
     {
         $this->table = Config::get('tracking.table');
     }
 
-    /**
-     * @return void
-     */
     public function up(): void
     {
         Schema::create($this->table, function (Blueprint $table) {
@@ -44,9 +32,6 @@ class CreateTrackingTable extends Migration
         });
     }
 
-    /**
-     * @return void
-     */
     public function down(): void
     {
         Schema::dropIfExists($this->table);

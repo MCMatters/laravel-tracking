@@ -16,6 +16,9 @@ return [
 
         // List of uris that should be skipped.
         'uris' => [],
+
+        // Skip recording response.
+        'response' => false,
     ],
 
     // User field settings.

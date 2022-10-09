@@ -20,11 +20,6 @@ use const false;
 use const null;
 use const true;
 
-/**
- * Class Track
- *
- * @package McMatters\LaravelTracking\Http\Middleware
- */
 class Track
 {
     /**
@@ -42,21 +37,11 @@ class Track
      */
     protected $trackingModel;
 
-    /**
-     * Track constructor.
-     */
     public function __construct()
     {
         $this->config = Config::get($this->configName, []);
     }
 
-    /**
-     * @param \Illuminate\Http\Request $request
-     * @param \Closure $next
-     * @param string|null $guard
-     *
-     * @return mixed
-     */
     public function handle(Request $request, Closure $next, string $guard = null)
     {
         $user = $request->user($guard);
@@ -74,12 +59,6 @@ class Track
         return $response;
     }
 
-    /**
-     * @param mixed $user
-     * @param \Illuminate\Http\Request $request
-     *
-     * @return bool
-     */
     protected function shouldSkipTracking($user, Request $request): bool
     {
         return $this->shouldSkipAnonymous($user) ||
@@ -87,12 +66,6 @@ class Track
             $this->shouldSkipUri($request);
     }
 
-    /**
-     * @param mixed $user
-     * @param \Illuminate\Http\Request $request
-     *
-     * @return void
-     */
     protected function track($user, Request $request): void
     {
         $input = Arr::except(
@@ -117,13 +90,12 @@ class Track
         ]);
     }
 
-    /**
-     * @param mixed $response
-     *
-     * @return void
-     */
     protected function trackResponse($response): void
     {
+        if ($this->config['skip']['response'] ?? false) {
+            return;
+        }
+
         $data = [];
 
         if ($response instanceof JsonResponse) {
@@ -142,21 +114,11 @@ class Track
         }
     }
 
-    /**
-     * @param mixed $user
-     *
-     * @return bool
-     */
     protected function shouldSkipAnonymous($user): bool
     {
         return null === $user && ($this->config['skip']['anonymous'] ?? null);
     }
 
-    /**
-     * @param mixed $user
-     *
-     * @return bool
-     */
     protected function shouldSkipUser($user): bool
     {
         return null !== $user &&
@@ -166,11 +128,6 @@ class Track
             );
     }
 
-    /**
-     * @param \Illuminate\Http\Request $request
-     *
-     * @return bool
-     */
     protected function shouldSkipUri(Request $request): bool
     {
         foreach ($this->config['skip']['uris'] ?? [] as $pattern) {
@@ -182,11 +139,6 @@ class Track
         return false;
     }
 
-    /**
-     * @param mixed $user
-     *
-     * @return bool
-     */
     protected function shouldSkipUserByName($user): bool
     {
         return in_array(
@@ -196,11 +148,6 @@ class Track
         );
     }
 
-    /**
-     * @param mixed $user
-     *
-     * @return bool
-     */
     protected function shouldSkipUserByEmail($user): bool
     {
         return in_array(
