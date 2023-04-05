@@ -53,7 +53,7 @@ class Tracking extends Model
             $query = $model->newQueryWithoutScopes()->select([$keyName]);
 
             do {
-                $uuid = Str::ulid()->toString();
+                $uuid = (string) Str::ulid();
             } while (null !== $query->whereKey($uuid)->toBase()->first());
 
             $model->setAttribute($keyName, $uuid);
