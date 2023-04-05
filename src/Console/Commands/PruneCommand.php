@@ -11,14 +11,8 @@ use McMatters\LaravelTracking\Models\Tracking;
 
 class PruneCommand extends Command
 {
-    /**
-     * @var string
-     */
     protected $signature = 'tracking:prune {--days=30: The number of days to retain data}';
 
-    /**
-     * @var string
-     */
     protected $description = 'Prune stale entries from the database';
 
     public function handle(): int

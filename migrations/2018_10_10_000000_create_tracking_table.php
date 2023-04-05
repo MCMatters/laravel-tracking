@@ -9,7 +9,7 @@ use Illuminate\Support\Facades\Schema;
 
 class CreateTrackingTable extends Migration
 {
-    protected $table;
+    protected string $table;
 
     public function __construct()
     {
@@ -19,7 +19,7 @@ class CreateTrackingTable extends Migration
     public function up(): void
     {
         Schema::create($this->table, function (Blueprint $table) {
-            $table->uuid('id')->primary();
+            $table->ulid('id')->primary();
             $table->unsignedBigInteger('user_id')->nullable()->index();
             $table->string('uri', 2000);
             $table->string('method')->index();

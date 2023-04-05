@@ -22,20 +22,11 @@ use const true;
 
 class Track
 {
-    /**
-     * @var string
-     */
-    protected $configName = 'tracking';
+    protected string $configName = 'tracking';
 
-    /**
-     * @var array
-     */
-    protected $config = [];
+    protected array $config = [];
 
-    /**
-     * @var \McMatters\LaravelTracking\Models\Tracking
-     */
-    protected $trackingModel;
+    protected Tracking $trackingModel;
 
     public function __construct()
     {

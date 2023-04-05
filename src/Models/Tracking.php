@@ -13,24 +13,12 @@ use const null;
 
 class Tracking extends Model
 {
-    /**
-     * @var bool
-     */
     public $timestamps = false;
 
-    /**
-     * @var bool
-     */
     public $incrementing = false;
 
-    /**
-     * @var string
-     */
     protected $keyType = 'string';
 
-    /**
-     * @var array
-     */
     protected $fillable = [
         'user_id',
         'uri',
@@ -42,19 +30,13 @@ class Tracking extends Model
         'created_at',
     ];
 
-    /**
-     * @var array
-     */
     protected $casts = [
         'input' => 'json',
         'headers' => 'json',
         'created_at' => 'datetime',
     ];
 
-    /**
-     * @var string
-     */
-    protected $configName = 'tracking';
+    protected string $configName = 'tracking';
 
     public function __construct(array $attributes = [])
     {
@@ -71,7 +53,7 @@ class Tracking extends Model
             $query = $model->newQueryWithoutScopes()->select([$keyName]);
 
             do {
-                $uuid = Str::uuid()->toString();
+                $uuid = Str::ulid()->toString();
             } while (null !== $query->whereKey($uuid)->toBase()->first());
 
             $model->setAttribute($keyName, $uuid);
