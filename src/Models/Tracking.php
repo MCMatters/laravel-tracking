@@ -24,6 +24,7 @@ class Tracking extends Model
         'uri',
         'method',
         'input',
+        'response',
         'headers',
         'ip',
         'user_agent',
@@ -32,6 +33,7 @@ class Tracking extends Model
 
     protected $casts = [
         'input' => 'json',
+        'response' => 'json',
         'headers' => 'json',
         'created_at' => 'datetime',
     ];
