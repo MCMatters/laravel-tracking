@@ -9,10 +9,12 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Arr;
 use Illuminate\Support\Carbon;
 use Illuminate\Support\Facades\Config;
+use Illuminate\Support\Facades\Log;
 use McMatters\LaravelTracking\Models\Tracking;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\RedirectResponse;
 use Symfony\Component\HttpFoundation\Response;
+use Throwable;
 
 use function in_array;
 
@@ -26,7 +28,7 @@ class Track
 
     protected array $config = [];
 
-    protected Tracking $trackingModel;
+    protected ?Tracking $trackingModel = null;
 
     public function __construct()
     {
@@ -69,20 +71,28 @@ class Track
             $this->config['sanitize']['headers'] ?? [],
         );
 
-        $this->trackingModel = Tracking::query()->create([
-            'user_id' => $user ? $user->getKey() : null,
-            'uri' => $request->getPathInfo(),
-            'method' => $request->method(),
-            'input' => $input ?: null,
-            'headers' => $headers ?: null,
-            'ip' => $request->ip(),
-            'user_agent' => $request->userAgent(),
-            'created_at' => Carbon::now(),
-        ]);
+        try {
+            $this->trackingModel = Tracking::query()->create([
+                'user_id' => $user ? $user->getKey() : null,
+                'uri' => $request->getPathInfo(),
+                'method' => $request->method(),
+                'input' => $input ?: null,
+                'headers' => $headers ?: null,
+                'ip' => $request->ip(),
+                'user_agent' => $request->userAgent(),
+                'created_at' => Carbon::now(),
+            ]);
+        } catch (Throwable $e) {
+            Log::error("[Tracking] {$e->getMessage()}");
+        }
     }
 
     protected function trackResponse($response): void
     {
+        if (null === $this->trackingModel) {
+            return;
+        }
+
         if ($this->config['skip']['response'] ?? false) {
             return;
         }

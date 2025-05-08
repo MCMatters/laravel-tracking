@@ -17,16 +17,24 @@ class PruneCommand extends Command
 
     public function handle(): int
     {
-        $count = $this->getQuery()->delete();
+        $countPruned = 0;
 
-        $this->info("{$count} entries pruned.");
+        $this->getQuery()
+            ->eachById(static function (Tracking $tracking) use (&$countPruned) {
+                $tracking->delete();
+
+                $countPruned++;
+            });
+
+        $this->info("{$countPruned} entries pruned.");
 
         return self::SUCCESS;
     }
 
     protected function getQuery(): Builder
     {
-        $days = $this->option('days');
+        $days = (int) $this->option('days');
+        $days = max($days, 1);
 
         return Tracking::query()->where(
             'created_at',

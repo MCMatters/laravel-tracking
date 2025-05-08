@@ -36,6 +36,7 @@ return [
         'input' => [
             'password',
             'password_confirmation',
+            'token',
             '_token',
         ],
         // Sanitize request headers.
