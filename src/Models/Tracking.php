@@ -9,10 +9,12 @@ use Illuminate\Support\Facades\Config;
 use Illuminate\Support\Str;
 
 use const false;
-use const null;
 
 class Tracking extends Model
 {
+    public const RESPONSE_TYPE_JSON = 'json';
+    public const RESPONSE_TYPE_HTML = 'html';
+
     public $timestamps = false;
 
     public $incrementing = false;
@@ -43,7 +45,6 @@ class Tracking extends Model
     public function __construct(array $attributes = [])
     {
         $this->setTable(Config::get("{$this->configName}.table"));
-        $this->guard([$this->primaryKey]);
 
         parent::__construct($attributes);
     }
@@ -51,14 +52,7 @@ class Tracking extends Model
     protected static function booting(): void
     {
         static::creating(static function (Model $model) {
-            $keyName = $model->getKeyName();
-            $query = $model->newQueryWithoutScopes()->select([$keyName]);
-
-            do {
-                $uuid = (string) Str::ulid();
-            } while (null !== $query->whereKey($uuid)->toBase()->first());
-
-            $model->setAttribute($keyName, $uuid);
+            $model->setAttribute($model->getKeyName(), (string) Str::ulid());
         });
 
         parent::booting();

@@ -2,6 +2,8 @@
 
 declare(strict_types=1);
 
+use McMatters\LaravelTracking\Models\Tracking;
+
 return [
     // Settings for skipping.
     'skip' => [
@@ -43,6 +45,13 @@ return [
         'headers' => [
             'cookie',
             'user-agent',
+        ],
+    ],
+
+    'limits' => [
+        'max_response_size' => [
+            Tracking::RESPONSE_TYPE_HTML => 65535,
+            Tracking::RESPONSE_TYPE_JSON => null,
         ],
     ],
 

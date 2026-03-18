@@ -7,7 +7,10 @@ namespace McMatters\LaravelTracking\Console\Commands;
 use Carbon\Carbon;
 use Illuminate\Console\Command;
 use Illuminate\Database\Eloquent\Builder;
+use Illuminate\Database\Eloquent\Collection;
 use McMatters\LaravelTracking\Models\Tracking;
+
+use function max;
 
 class PruneCommand extends Command
 {
@@ -20,10 +23,10 @@ class PruneCommand extends Command
         $countPruned = 0;
 
         $this->getQuery()
-            ->eachById(static function (Tracking $tracking) use (&$countPruned) {
-                $tracking->delete();
+            ->chunkById(500, static function (Collection $collection) use (&$countPruned) {
+                $collection->toQuery()->delete();
 
-                $countPruned++;
+                $countPruned += $collection->count();
             });
 
         $this->info("{$countPruned} entries pruned.");
@@ -33,13 +36,10 @@ class PruneCommand extends Command
 
     protected function getQuery(): Builder
     {
-        $days = (int) $this->option('days');
-        $days = max($days, 1);
-
         return Tracking::query()->where(
             'created_at',
             '<',
-            Carbon::parse("-{$days} days"),
+            Carbon::now()->subDays(max((int) $this->option('days'), 1)),
         );
     }
 }

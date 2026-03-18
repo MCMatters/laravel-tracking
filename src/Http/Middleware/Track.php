@@ -17,6 +17,7 @@ use Symfony\Component\HttpFoundation\Response;
 use Throwable;
 
 use function in_array;
+use function substr;
 
 use const false;
 use const null;
@@ -35,7 +36,7 @@ class Track
         $this->config = Config::get($this->configName, []);
     }
 
-    public function handle(Request $request, Closure $next, string $guard = null)
+    public function handle(Request $request, Closure $next, ?string $guard = null)
     {
         $user = $request->user($guard);
 
@@ -61,6 +62,8 @@ class Track
 
     protected function track($user, Request $request): void
     {
+        $this->trackingModel = null;
+
         $input = Arr::except(
             $request->all(),
             $this->config['sanitize']['input'] ?? [],
@@ -100,14 +103,22 @@ class Track
         $data = [];
 
         if ($response instanceof JsonResponse) {
-            $data = $response->getContent();
+            $data = $this->getLimitedResponse(
+                $response->getContent() ?: '',
+                Tracking::RESPONSE_TYPE_JSON,
+            );
         } elseif ($response instanceof RedirectResponse) {
             $data = ['redirect' => $response->getTargetUrl()];
         } elseif (
             $response instanceof Response &&
             false !== ($content = $response->getContent())
         ) {
-            $data = ['html' => $content];
+            $data = [
+                'html' => $this->getLimitedResponse(
+                    $content ?: '',
+                    Tracking::RESPONSE_TYPE_HTML
+                ),
+            ];
         }
 
         if ($data) {
@@ -117,7 +128,7 @@ class Track
 
     protected function shouldSkipAnonymous($user): bool
     {
-        return null === $user && ($this->config['skip']['anonymous'] ?? null);
+        return null === $user && ($this->config['skip']['anonymous'] ?? false);
     }
 
     protected function shouldSkipUser($user): bool
@@ -156,5 +167,16 @@ class Track
             $this->config['skip']['emails'] ?? [],
             true,
         );
+    }
+
+    protected function getLimitedResponse(string $content, string $limitKey): string
+    {
+        $limit = (int) ($this->config['limits']['max_response_size'][$limitKey] ?? 0);
+
+        if (!$limit) {
+            return $content;
+        }
+
+        return substr($content, 0, $limit);
     }
 }
