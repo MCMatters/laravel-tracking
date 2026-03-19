@@ -10,6 +10,7 @@ use Illuminate\Support\Arr;
 use Illuminate\Support\Carbon;
 use Illuminate\Support\Facades\Config;
 use Illuminate\Support\Facades\Log;
+use Illuminate\Support\Str;
 use McMatters\LaravelTracking\Models\Tracking;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\RedirectResponse;
@@ -57,7 +58,8 @@ class Track
     {
         return $this->shouldSkipAnonymous($user) ||
             $this->shouldSkipUser($user) ||
-            $this->shouldSkipUri($request);
+            $this->shouldSkipUri($request) ||
+            $this->shouldSkipByUserAgent($request);
     }
 
     protected function track($user, Request $request): void
@@ -144,6 +146,19 @@ class Track
     {
         foreach ($this->config['skip']['uris'] ?? [] as $pattern) {
             if ($request->is($pattern)) {
+                return true;
+            }
+        }
+
+        return false;
+    }
+
+    protected function shouldSkipByUserAgent(Request $request): bool
+    {
+        $userAgent = $request->userAgent();
+
+        foreach ($this->config['skip']['user_agents'] ?? [] as $pattern) {
+            if (Str::is($pattern, $userAgent)) {
                 return true;
             }
         }

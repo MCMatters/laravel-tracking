@@ -19,6 +19,12 @@ return [
         // List of uris that should be skipped.
         'uris' => [],
 
+        // List of user agents that should be skipped.
+        'user_agents' => [
+            // 'Uptime-Kuma/*',
+            // 'SentryUptimeBot/*',
+        ],
+
         // Skip recording response.
         'response' => false,
     ],
