@@ -8,7 +8,7 @@ use Carbon\Carbon;
 use Illuminate\Console\Command;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Collection;
-use McMatters\LaravelTracking\Models\Tracking;
+use Illuminate\Support\Facades\Config;
 
 use function max;
 
@@ -36,7 +36,9 @@ class PruneCommand extends Command
 
     protected function getQuery(): Builder
     {
-        return Tracking::query()->where(
+        $model = Config::get('tracking.model');
+
+        return $model::query()->where(
             'created_at',
             '<',
             Carbon::now()->subDays(max((int) $this->option('days'), 1)),

@@ -62,4 +62,6 @@ return [
     ],
 
     'table' => 'tracking',
+
+    'model' => McMatters\LaravelTracking\Models\Tracking::class,
 ];

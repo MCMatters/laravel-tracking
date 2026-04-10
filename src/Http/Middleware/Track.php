@@ -67,7 +67,7 @@ class Track
         $this->trackingModel = null;
 
         try {
-            $this->trackingModel = Tracking::query()->create(
+            $this->trackingModel = $this->config['model']::query()->create(
                 $this->getTrackingData($user, $request),
             );
         } catch (Throwable $e) {
