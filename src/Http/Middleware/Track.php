@@ -66,27 +66,10 @@ class Track
     {
         $this->trackingModel = null;
 
-        $input = Arr::except(
-            $request->all(),
-            $this->config['sanitize']['input'] ?? [],
-        );
-
-        $headers = Arr::except(
-            $request->headers->all(),
-            $this->config['sanitize']['headers'] ?? [],
-        );
-
         try {
-            $this->trackingModel = Tracking::query()->create([
-                'user_id' => $user ? $user->getKey() : null,
-                'uri' => $request->getPathInfo(),
-                'method' => $request->method(),
-                'input' => $input ?: null,
-                'headers' => $headers ?: null,
-                'ip' => $request->ip(),
-                'user_agent' => $request->userAgent(),
-                'created_at' => Carbon::now(),
-            ]);
+            $this->trackingModel = Tracking::query()->create(
+                $this->getTrackingData($user, $request),
+            );
         } catch (Throwable $e) {
             Log::error("[Tracking] {$e->getMessage()}");
         }
@@ -182,6 +165,30 @@ class Track
             $this->config['skip']['emails'] ?? [],
             true,
         );
+    }
+
+    protected function getTrackingData($user, Request $request): array
+    {
+        $input = Arr::except(
+            $request->all(),
+            $this->config['sanitize']['input'] ?? [],
+        );
+
+        $headers = Arr::except(
+            $request->headers->all(),
+            $this->config['sanitize']['headers'] ?? [],
+        );
+
+        return [
+            'user_id' => $user ? $user->getKey() : null,
+            'uri' => $request->getPathInfo(),
+            'method' => $request->method(),
+            'input' => $input ?: null,
+            'headers' => $headers ?: null,
+            'ip' => $request->ip(),
+            'user_agent' => $request->userAgent(),
+            'created_at' => Carbon::now(),
+        ];
     }
 
     protected function getLimitedResponse(string $content, string $limitKey): string
